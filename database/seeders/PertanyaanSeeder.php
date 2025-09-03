@@ -152,7 +152,7 @@ class PertanyaanSeeder extends Seeder
                 ['pertanyaan' => 'Pemeriksaan dan pengencangan baut/mur', 'tipe_jawaban' => 'Ya/Tidak', 'jenis_pertanyaan' => 'pemeliharaan', 'urutan' => 14],
                 ['pertanyaan' => 'Filter udara bersih atau diganti jika perlu', 'tipe_jawaban' => 'Ya/Tidak', 'jenis_pertanyaan' => 'pemeliharaan', 'urutan' => 15],
                 ['pertanyaan' => 'Pemeriksaan knalpot, tidak bocor dan tidak tersumbat', 'tipe_jawaban' => 'Ya/Tidak', 'jenis_pertanyaan' => 'pemeliharaan', 'urutan' => 16],
-                ['pertanyaan' => 'Jam operasi tercatat (untuk jadwal servis berkala)', 'tipe_jawaban' => 'String', 'jenis_pertanyaan' => 'pemeliharaan', 'urutan' => 17],
+                ['pertanyaan' => 'Jam operasi tercatat (untuk jadwal servis berkala)', 'tipe_jawaban' => 'Teks', 'jenis_pertanyaan' => 'pemeliharaan', 'urutan' => 17],
                 ['pertanyaan' => 'Sistem ATS (jika ada) berfungsi dan melakukan switching otomatis', 'tipe_jawaban' => 'Ya/Tidak', 'jenis_pertanyaan' => 'pemeliharaan', 'urutan' => 18],
 
                 // Tugas

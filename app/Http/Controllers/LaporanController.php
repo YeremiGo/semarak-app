@@ -8,6 +8,7 @@ use App\Models\Jawaban;
 use App\Models\Laporan;
 use App\Models\Pertanyaan;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class LaporanController extends Controller
 {
@@ -96,5 +97,61 @@ class LaporanController extends Controller
         $laporan->load('aset', 'jawabans.pertanyaan', 'dokumentasis');
 
         return view('laporan.show', compact('laporan'));
+    }
+
+    // Menampilkan halaman formulir
+    public function export() {
+        return view('laporan.export');
+    }
+
+    public function download(Request $request) {
+        $query = Laporan::with(['aset', 'aset.kategori']);
+
+        if ($request->filled('month')) {
+            $query->whereMonth('created_at', $request->month);
+        }
+        if ($request->filled('year')) {
+            $query->whereYear('created_at', $request->year);
+        }
+        if ($request->filled('tipe_laporan')) {
+            $query->where('tipe_laporan', $request->tipe_laporan);
+        }
+
+        $laporans = $query->get();
+
+        $fileName = 'laporan_' . date('Y-m-d_H-i-s');
+
+        Excel::create($fileName, function($excel) use ($laporans) {
+
+            $excel->sheet('Laporan', function($sheet) use ($laporans) {
+
+                // Menyiapkan semua data dalam format array
+                $dataForExcel = [];
+                
+                // Menambahkan baris header
+                $dataForExcel[] = [
+                    'ID Laporan', 'Nama Aset', 'Lokasi', 'Kategori',
+                    'Nama Teknisi', 'Tipe Laporan', 'Status', 'Tanggal Laporan'
+                ];
+
+                // Menambahkan baris data untuk setiap laporan
+                foreach ($laporans as $laporan) {
+                    $dataForExcel[] = [
+                        $laporan->id_laporan,
+                        $laporan->aset->nama_aset,
+                        $laporan->aset->lokasi,
+                        $laporan->aset->kategori->nama_kategori ?? 'N/A',
+                        $laporan->nama_teknisi,
+                        ucfirst(str_replace('_', ' ', $laporan->tipe_laporan)),
+                        $laporan->status,
+                        $laporan->created_at->format('Y-m-d H:i:s'),
+                    ];
+                }
+
+                // Memasukkan semua data array ke dalam sheet Excel
+                $sheet->fromArray($dataForExcel, null, 'A1', false, false);
+            });
+
+        })->download('xlsx');
     }
 }

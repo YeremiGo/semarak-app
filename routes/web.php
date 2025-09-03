@@ -18,6 +18,12 @@ Route::post('/laporan/next', [LaporanController::class, 'next'])->name('laporan.
 // Rute menyimpan data
 Route::post('/laporan/store', [LaporanController::class, 'store'])->name('laporan.store');
 
+// Rute menampilkan halaman download
+Route::get('/laporan/export', [LaporanController::class, 'export'])->name('laporan.export');
+
+// Rute mengunduh laporan
+Route::get('/laporan/download', [LaporanController::class, 'download'])->name('laporan.download');
+
 // Rute menampilkan laporan
 Route::get('/laporan/{laporan}', [LaporanController::class, 'show'])->name('laporan.show');
 
