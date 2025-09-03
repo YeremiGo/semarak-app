@@ -9,6 +9,7 @@ use App\Models\Laporan;
 use App\Models\Pertanyaan;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\LaporaExport;
 
 class LaporanController extends Controller
 {
@@ -105,53 +106,44 @@ class LaporanController extends Controller
     }
 
     public function download(Request $request) {
-        $query = Laporan::with(['aset', 'aset.kategori']);
+        // 1. Ambil filter dari request
+        $month = $request->input('month');
+        $year = $request->input('year');
+        $tipe_laporan = $request->input('tipe_laporan');
 
-        if ($request->filled('month')) {
-            $query->whereMonth('created_at', $request->month);
+        $query = Laporan::query(); // Mulai query kosong
+
+        if ($month) {
+            $query->whereMonth('created_at', $month);
         }
-        if ($request->filled('year')) {
-            $query->whereYear('created_at', $request->year);
+        if ($year) {
+            $query->whereYear('created_at', $year);
         }
-        if ($request->filled('tipe_laporan')) {
-            $query->where('tipe_laporan', $request->tipe_laporan);
+        if ($tipe_laporan) {
+            $query->where('tipe_laporan', $tipe_laporan);
         }
 
-        $laporans = $query->get();
+        // ==========================================================
+        // === (BARU) Cek apakah ada data yang cocok ===
+        // ==========================================================
+        if (!$query->exists()) {
+            // Jika tidak ada data, kembalikan ke halaman sebelumnya dengan pesan error
+            return back()->with('error', 'Tidak ada data laporan yang ditemukan untuk filter yang dipilih.');
+        }
+        
+        $namaBulan = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+        $tipePart = $tipe_laporan ? ucfirst(str_replace('_', ' ', $tipe_laporan)) : 'SemuaLaporan';
+        $bulanPart = $month ? $namaBulan[(int)$month] : 'SemuaBulan';
+        $tahunPart = $year ? $year : 'SemuaTahun';
 
-        $fileName = 'laporan_' . date('Y-m-d_H-i-s');
+        // 4. Gabungkan semua bagian menjadi satu nama file
+        $fileName = 'Laporan_' . $tipePart . '_' . $bulanPart . '_' . $tahunPart . '.xlsx';
 
-        Excel::create($fileName, function($excel) use ($laporans) {
-
-            $excel->sheet('Laporan', function($sheet) use ($laporans) {
-
-                // Menyiapkan semua data dalam format array
-                $dataForExcel = [];
-                
-                // Menambahkan baris header
-                $dataForExcel[] = [
-                    'ID Laporan', 'Nama Aset', 'Lokasi', 'Kategori',
-                    'Nama Teknisi', 'Tipe Laporan', 'Status', 'Tanggal Laporan'
-                ];
-
-                // Menambahkan baris data untuk setiap laporan
-                foreach ($laporans as $laporan) {
-                    $dataForExcel[] = [
-                        $laporan->id_laporan,
-                        $laporan->aset->nama_aset,
-                        $laporan->aset->lokasi,
-                        $laporan->aset->kategori->nama_kategori ?? 'N/A',
-                        $laporan->nama_teknisi,
-                        ucfirst(str_replace('_', ' ', $laporan->tipe_laporan)),
-                        $laporan->status,
-                        $laporan->created_at->format('Y-m-d H:i:s'),
-                    ];
-                }
-
-                // Memasukkan semua data array ke dalam sheet Excel
-                $sheet->fromArray($dataForExcel, null, 'A1', false, false);
-            });
-
-        })->download('xlsx');
+        // 3. Panggil class LaporanExport untuk men-download file
+        return Excel::download(new LaporaExport($month, $year, $tipe_laporan), $fileName);
     }
 }

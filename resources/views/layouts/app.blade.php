@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Dashboard</title>
+    <title>SEMARAK</title>
     {{-- Setting Font Poppins --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -55,7 +55,7 @@
         {{-- Header --}}
         <div class="flex-1 flex flex-col">
             <header class="flex items-center justify-between p-4 bg-white border-b">
-                <h1 class="text-2xl font-bold text-gray-800">Dashboard</h1>
+                <h1 class="text-2xl font-bold text-gray-800">SEMARAK</h1>
                 <div class="flex items-center space-x-5">
                     <button class="text-gray-500 hover:text-gray-800">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6">

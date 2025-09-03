@@ -71,7 +71,7 @@
             </div>
         @empty
             <div class="col-span-3 bg-white rounded-lg shadow p-5 text-center text-gray-500">
-                <p>Tidak ada laporan yang cocok dengan filter Anda.</p>
+                <p>Tidak ada laporan.</p>
             </div>
         @endforelse
     </div>

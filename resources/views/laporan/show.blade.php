@@ -9,10 +9,10 @@
             {{ $laporan->tipe_laporan == 'pemeliharaan' ? 'Laporan Pemeliharaan' : 'Laporan Tindak Lanjut' }}
         </h1>
         <div class="flex items-center space-x-2">
-            <button class="px-4 py-2 bg-red-600 text-white text-sm font-semibold rounded-lg hover:bg-red-700">
+            <button class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700">
                 Hapus
             </button>
-            <a href="{{ url()->previous() }}" class="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700">
+            <a href="{{ url()->previous() }}" class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700">
                 Kembali
             </a>
         </div>
@@ -101,7 +101,7 @@
                         {{-- Tombol Download --}}
                         <a href="{{ asset('storage/' . $doc->file_path) }}" 
                            download="{{ $doc->file_name }}"
-                           class="ml-4 flex-shrink-0 px-3 py-1 bg-blue-600 text-white font-semibold text-xs rounded-md hover:bg-blue-700 transition">
+                           class="ml-4 flex-shrink-0 px-3 py-1 bg-blue-600 text-white font-medium text-sm rounded-md hover:bg-blue-700 transition">
                            Download
                         </a>
                     </div>
