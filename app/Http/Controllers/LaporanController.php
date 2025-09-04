@@ -10,6 +10,7 @@ use App\Models\Pertanyaan;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\LaporaExport;
+use App\Models\Notifiaksi;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -101,6 +102,13 @@ class LaporanController extends Controller
             }
         }
 
+        if ($laporan->tipe_laporan == 'tindak_lanjut') {
+            Notifiaksi::create([
+                'laporan_id' => $laporan->id_laporan,
+                'pesan' => "Butuh Tindak Lajut - " . $laporan->aset->nama_aset,
+            ]);
+        }
+
         $aset = Aset::find($request->aset_id);
         return redirect()->route('laporan.create', ['aset' => $aset->kode_aset])->with('success', 'Laporan berhasil disimpan!');
     }
@@ -141,6 +149,10 @@ class LaporanController extends Controller
 
         $laporan->status = $request->status;
         $laporan->save();
+
+        if (strtolower($laporan->status) == 'selesai') {
+            Notifiaksi::where('laporan_id', $laporan->id_laporan)->delete();
+        }
 
         return redirect()->route('dashboard')->with('success', 'Status laporan berhasil diperbarui');
     }
