@@ -7,11 +7,13 @@ use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    // Menampilkan dashboard
+    /**
+     * Fungsi Menampilkan Dashboard
+     */
     public function index(Request $request) {
-        // Ambil SEMUA input filter dari formulir
+        // Ambil input pencarian dan filter tipe laporan
         $search = $request->input('search');
-        $tipe_laporan = $request->input('tipe_laporan'); // <-- (PENTING) Ambil filter tipe laporan
+        $tipe_laporan = $request->input('tipe_laporan');
 
         // Mulai query dasar
         $query = Laporan::with('aset.kategori')->latest();

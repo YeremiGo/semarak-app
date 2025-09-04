@@ -9,13 +9,15 @@
             {{ $laporan->tipe_laporan == 'pemeliharaan' ? 'Laporan Pemeliharaan' : 'Laporan Tindak Lanjut' }}
         </h1>
         <div class="flex items-center space-x-2">
-            <form action="{{ route('laporan.destroy', $laporan) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus laporan ini? Ini tidak bisa dibatalkan.');">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700">
-                    Hapus
-                </button>
-            </form>
+            @can ('delete-laporan')
+                <form action="{{ route('laporan.destroy', $laporan) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus laporan ini? Ini tidak bisa dibatalkan.');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700">
+                        Hapus
+                    </button>
+                </form>
+            @endcan
             <a href="{{ url()->previous() }}" class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700">
                 Kembali
             </a>
@@ -31,10 +33,27 @@
         </div>
 
         @if($laporan->tipe_laporan == 'tindak_lanjut')
-        <div>
-            <label class="block text-gray-500 mb-1">Status</label>
-            <p class="font-semibold text-gray-800 px-3 py-2 border border-gray-300 rounded-md">{{ $laporan->status }}</p>
-        </div>
+            @can ('update-status-laporan')
+                <div>
+                    <form action="{{ route('laporan.updateStatus', $laporan) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <label for="status" class="block text-gray-500 mb-1">Ubah Status</label>
+                        <div class="flex items-center space-x-2">
+                            <select name="status" id="status" class="border rounded-md text-sm w-full px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                                <option value="Belum Proses" @if($laporan->status == 'Belum Proses') selected @endif>Belum Proses</option>
+                                <option value="Selesai" @if($laporan->status == 'Selesai') selected @endif>Selesai</option>
+                            </select>
+                            <button type="submit" class="px-3 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700">Update</button>
+                        </div>
+                    </form>
+                </div>
+            @else
+                <div>
+                    <label class="block text-gray-500 mb-1">Status</label>
+                    <p class="font-semibold text-gray-800 px-3 py-2 border border-gray-300 rounded-md">{{ $laporan->status }}</p>
+                </div>
+            @endcan
         @endif
 
         <div>

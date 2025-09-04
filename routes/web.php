@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AsetController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LaporanController;
@@ -30,6 +31,9 @@ Route::get('/laporan/download', [LaporanController::class, 'download'])->name('l
 // Rute menampilkan laporan
 Route::get('/laporan/{laporan}', [LaporanController::class, 'show'])->name('laporan.show');
 
+// Rute perubahan status
+Route::put('/laporan/{laporan}/status', [LaporanController::class, 'updateStatus'])->name('laporan.updateStatus')->middleware('auth');
+
 // Rute menampilkan login
 Route::get('/login', [AuthController::class, 'show'])->name('login')->middleware('guest');
 
@@ -41,3 +45,6 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Rute dashboard setelah login
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth');
+
+// Rute Aset
+Route::resource('aset', AsetController::class)->middleware('auth');

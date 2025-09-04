@@ -11,15 +11,22 @@ use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\LaporaExport;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class LaporanController extends Controller
 {
-    // Menampilkan page 1 : memilih tipe laporan
+    use AuthorizesRequests;
+
+    /**
+     * Fungsi Menampilkan Formulir Laporan
+     */
     public function create(Aset $aset) {
         return view('laporan.create', compact('aset'));
     }
 
-    // Memproses page 1 dan Menampilkan page 2
+    /**
+     * Fungsi Memproses Data di Page 1 Formulir Laporan
+     */
     public function next(Request $request) {
         // Validasi input page 1
         $request->validate([
@@ -52,7 +59,9 @@ class LaporanController extends Controller
         ]);
     }
 
-    // Simpan data page 2 ke database
+    /**
+     * Fungsi Memproses Data di Page 2 Formulir Laporan
+     */
     public function store(Request $request) {
         // Validasi data umum
         $request->validate([
@@ -92,9 +101,13 @@ class LaporanController extends Controller
             }
         }
 
-        return redirect('/')->with('success', 'Laporan berhasil disimpan!');
+        $aset = Aset::find($request->aset_id);
+        return redirect()->route('laporan.create', ['aset' => $aset->kode_aset])->with('success', 'Laporan berhasil disimpan!');
     }
 
+    /**
+     * Fungsi Menampilkan Laporan di Dashboard
+     */
     public function show(Laporan $laporan) {
         $laporan->load('aset', 'jawabans.pertanyaan', 'dokumentasis');
 
@@ -114,6 +127,22 @@ class LaporanController extends Controller
         $laporan->delete();
 
         return redirect()->route('dashboard')->with('success', 'Laporan berhasil dihapus');
+    }
+
+    /**
+     * Fungsi Mengubah Status Laporan 
+     */
+    public function updateStatus(Request $request, Laporan $laporan) {
+        $this->authorize('update-status-laporan');
+
+        $request->validate([
+            'status' => 'required|string|in:Belum Proses,Selesai',
+        ]);
+
+        $laporan->status = $request->status;
+        $laporan->save();
+
+        return redirect()->route('dashboard')->with('success', 'Status laporan berhasil diperbarui');
     }
 
     /**

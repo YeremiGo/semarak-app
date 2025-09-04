@@ -54,14 +54,15 @@
                         <p class="text-sm text-gray-700 font-semibold">Teknisi: <span class="font-normal">{{ $laporan->nama_teknisi }}</span></p>
                         <p class="text-sm text-gray-700 font-semibold">Tanggal Laporan: <span class="font-normal">{{ \Carbon\Carbon::parse($laporan->created_at)->format('d F Y') }}</span></p>
                     </div>
-                    @if($laporan->tipe_laporan == 'tindak_lanjut')
-                        @if($laporan->status)
-                            <span class="text-xs font-semibold px-2 py-1 rounded-full 
-                                @if($laporan->status == 'Selesai') bg-green-100 text-green-800 
-                                @else bg-red-100 text-red-800 @endif">
-                                {{ $laporan->status }}
-                            </span>
-                        @endif
+                    @if($laporan->tipe_laporan == 'tindak_lanjut' && $laporan->status)
+                        <span class="text-xs font-semibold px-2 py-1 rounded-full
+                            @if(strtolower($laporan->status) == 'selesai') 
+                            bg-green-100 text-green-800 
+                        @else 
+                            bg-red-100 text-red-800 
+                        @endif">
+                        {{ $laporan->status }}
+                        </span>
                     @endif
                 </div>
 

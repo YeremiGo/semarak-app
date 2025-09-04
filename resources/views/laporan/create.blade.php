@@ -26,6 +26,8 @@
         }
     </script>
 
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <link rel="icon" href="{{ asset('images/logo-prov-bali.png') }}" type="image/png">
 
 </head>
@@ -71,6 +73,18 @@
             
         </form>
     </div>
+
+    @if (session('success'))
+    <script>
+        Swal.fire({
+            title: 'Berhasil!',
+            text: "{{ session('success') }}",
+            icon: 'success',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK'
+        });
+    </script>
+    @endif
 
 </body>
 </html>
