@@ -10,6 +10,7 @@ use App\Models\Pertanyaan;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\LaporaExport;
+use Illuminate\Support\Facades\Storage;
 
 class LaporanController extends Controller
 {
@@ -100,18 +101,38 @@ class LaporanController extends Controller
         return view('laporan.show', compact('laporan'));
     }
 
-    // Menampilkan halaman formulir
+    /**
+     * Fungsi Menghapus Laporan Dari Database Beserta Dokumentasinya
+     */
+    public function destroy(Laporan $laporan) {
+        // Hapus file dokumentasi dari laporan
+        foreach ($laporan->dokumentasis as $dokumentasi) {
+            Storage::disk('public')->delete($dokumentasi->file_path);
+        }
+
+        // Hapus data laporan
+        $laporan->delete();
+
+        return redirect()->route('dashboard')->with('success', 'Laporan berhasil dihapus');
+    }
+
+    /**
+     * Fungsi Menampilkan Halaman Download Laporan Excel
+     */
     public function export() {
         return view('laporan.export');
     }
 
+    /** 
+     * Fungsi Mendowload Laporan Excel Tanpa Dokumentasi
+    */
     public function download(Request $request) {
-        // 1. Ambil filter dari request
+        // Ambil data filter
         $month = $request->input('month');
         $year = $request->input('year');
         $tipe_laporan = $request->input('tipe_laporan');
 
-        $query = Laporan::query(); // Mulai query kosong
+        $query = Laporan::query();
 
         if ($month) {
             $query->whereMonth('created_at', $month);
@@ -123,11 +144,9 @@ class LaporanController extends Controller
             $query->where('tipe_laporan', $tipe_laporan);
         }
 
-        // ==========================================================
-        // === (BARU) Cek apakah ada data yang cocok ===
-        // ==========================================================
+        // Pengecekan data yang kosong
         if (!$query->exists()) {
-            // Jika tidak ada data, kembalikan ke halaman sebelumnya dengan pesan error
+            // Pesan error jika tidak ada
             return back()->with('error', 'Tidak ada data laporan yang ditemukan untuk filter yang dipilih.');
         }
         
@@ -140,10 +159,10 @@ class LaporanController extends Controller
         $bulanPart = $month ? $namaBulan[(int)$month] : 'SemuaBulan';
         $tahunPart = $year ? $year : 'SemuaTahun';
 
-        // 4. Gabungkan semua bagian menjadi satu nama file
+        // Penamaan laporan
         $fileName = 'Laporan_' . $tipePart . '_' . $bulanPart . '_' . $tahunPart . '.xlsx';
 
-        // 3. Panggil class LaporanExport untuk men-download file
+        // Panggil class LaporanExport untuk men-download file
         return Excel::download(new LaporaExport($month, $year, $tipe_laporan), $fileName);
     }
 }

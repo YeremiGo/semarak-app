@@ -9,9 +9,13 @@
             {{ $laporan->tipe_laporan == 'pemeliharaan' ? 'Laporan Pemeliharaan' : 'Laporan Tindak Lanjut' }}
         </h1>
         <div class="flex items-center space-x-2">
-            <button class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700">
-                Hapus
-            </button>
+            <form action="{{ route('laporan.destroy', $laporan) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus laporan ini? Ini tidak bisa dibatalkan.');">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700">
+                    Hapus
+                </button>
+            </form>
             <a href="{{ url()->previous() }}" class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700">
                 Kembali
             </a>
