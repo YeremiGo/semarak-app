@@ -4,7 +4,10 @@ use App\Http\Controllers\AsetController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LaporanController;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -48,3 +51,19 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 
 // Rute Aset
 Route::resource('aset', AsetController::class)->middleware('auth');
+
+Route::get('storage/{folder}/{filename}', function ($folder, $filename) {
+    $path = storage_path('app/public/' . $folder . '/' . $filename);
+
+    if (!File::exists($path)) {
+        abort(404);
+    }
+
+    $file = File::get($path);
+    $type = File::mimeType($path);
+
+    $response = Response::make($file, 200);
+    $response->header("Content-Type", $type);
+
+    return $response;
+})->name('storage.file');

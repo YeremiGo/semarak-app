@@ -114,6 +114,12 @@
             <h3 class="text-base font-bold text-gray-800 mb-2">Dokumentasi</h3>
             <div class="border rounded-md p-3 space-y-3">
                 @foreach($laporan->dokumentasis as $doc)
+                    @php
+                        // Memecah 'laporan_dokumentasi/namafile.jpg' menjadi folder dan nama file
+                        $pathParts = explode('/', $doc->file_path);
+                        $folder = $pathParts[0];
+                        $filename = $pathParts[1];
+                    @endphp
                     <div class="flex items-center justify-between text-sm bg-gray-50 p-2 rounded-md">
                         {{-- Nama File (Link untuk melihat) --}}
                         <a href="{{ asset('storage/' . $doc->file_path) }}" target="_blank" class="flex items-center text-gray-700 hover:text-blue-600 truncate">
